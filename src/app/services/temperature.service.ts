@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
-import {YearByMonthTemperature, YearBySeasonTemperature, YearSummary} from "../model/season-data";
+import {MonthTemperature, YearByMonthTemperature, YearBySeasonTemperature, YearSummary} from "../model/season-data";
 import {SyncStatus} from "../model/weather-data";
 
 @Injectable({
@@ -24,9 +24,13 @@ export class TemperatureService {
     return this.http.get<YearBySeasonTemperature[]>(`${this.baseUrl}/api/weather/seasons`, {params: params});
   }
 
-  public getMonthTemperature(years?: number): Observable<YearByMonthTemperature[]> {
+  public getYearMonthSummaryTemperature(years?: number): Observable<YearByMonthTemperature[]> {
     const params = this.getYearsToShowParams(years);
     return this.http.get<YearByMonthTemperature[]>(`${this.baseUrl}/api/weather/months`, {params: params});
+  }
+
+  public getYearMonthTemperature(year: number, month: number): Observable<MonthTemperature[]> {
+    return this.http.get<MonthTemperature[]>(`${this.baseUrl}/api/weather/month/${year}/${month}`);
   }
 
   public isSynced(): Observable<boolean> {

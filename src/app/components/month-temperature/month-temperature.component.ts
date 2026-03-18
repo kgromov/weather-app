@@ -1,5 +1,5 @@
 import {Component, Inject, LOCALE_ID, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MONTH_NAMES, MonthTemperature, YearByMonthTemperature} from "../../model/season-data";
+import {MONTH_NAMES, YearMonthTemperature, YearByMonthTemperature} from "../../model/season-data";
 import {ExportChart, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
 import {ChartjsComponent} from "@ctrl/ngx-chartjs";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
@@ -50,7 +50,7 @@ export class MonthTemperatureComponent implements OnInit, OnDestroy {
         this.availableYears = [...Array(yearsRange).keys()].map(i => i + 1)
       });
 
-    this.seasonService.getMonthTemperature()
+    this.seasonService.getYearMonthSummaryTemperature()
       .subscribe(data => {
         this.data = data;
         this.updateChartData(data);
@@ -86,9 +86,9 @@ export class MonthTemperatureComponent implements OnInit, OnDestroy {
     data
       .forEach(yearMonths => {
         console.log('year months = ', yearMonths);
-        const months: MonthTemperature[] = yearMonths.months;
+        const months: YearMonthTemperature[] = yearMonths.months;
         // @ts-ignore
-        const currentMonth: MonthTemperature = months.find(it => it.month === currentMonthIndex);
+        const currentMonth: YearMonthTemperature = months.find(it => it.month === currentMonthIndex);
         if (!!currentMonth) {
           labelsData.push(yearMonths.year);
           minData.push(currentMonth.minTemp);
