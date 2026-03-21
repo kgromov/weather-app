@@ -11,10 +11,11 @@ import {SeasonTemperatureComponent} from './components/season-temperature/season
 import {YearTemperatureComponent} from './components/year-temperature/year-temperature.component';
 import {AppRoutingModule} from "./app.routing";
 import {AbstractTemperatureDirective} from './components/abstract-temperature.directive';
-import {MonthTemperatureComponent} from './components/month-temperature/month-temperature.component';
+import {YearMonthTemperatureComponent} from './components/year-month-temperature/year-month-temperature.component';
 import {SyncButtonComponent} from './components/sync-button/sync-button.component';
 import {ToastrModule} from "ngx-toastr";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {MonthTemperatureComponent} from "./components/month-temperature/month-temperature.component";
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
     SeasonTemperatureComponent,
     YearTemperatureComponent,
     AbstractTemperatureDirective,
+    YearMonthTemperatureComponent,
     MonthTemperatureComponent,
     SyncButtonComponent
   ],

@@ -6,7 +6,7 @@ import {WeatherServiceService} from "../services/weather-service.service";
   selector: '[appAbstractTemperature]'
 })
 export class AbstractTemperatureDirective {
-  chartConfig: ExportChart = DEFAULT_CONFIG;
+  chartConfig: ExportChart = {...DEFAULT_CONFIG};
 
   constructor(@Inject(LOCALE_ID) public locale: string,
               private weatherService: WeatherServiceService) {

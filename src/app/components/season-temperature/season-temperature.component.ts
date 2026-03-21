@@ -10,14 +10,14 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {takeUntil} from "rxjs/operators";
 
 @Component({
-  selector: 'app-season-temperature',
+  selector: 'season-temperature',
   templateUrl: './season-temperature.component.html',
   styleUrls: ['../../app.component.css']
 })
 export class SeasonTemperatureComponent implements OnInit, OnDestroy {
   availableYears: number [] = [];
   data: YearBySeasonTemperature[] = [];
-  chartConfig: ExportChart = SEASONS_CHART_CONFIG;
+  chartConfig: ExportChart = {...SEASONS_CHART_CONFIG};
   // @ts-ignore
   @ViewChild(ChartjsComponent, {static: false}) chart: ChartjsComponent;
   private $subject: Subject<void> = new Subject<void>();

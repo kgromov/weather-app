@@ -25,7 +25,7 @@ import {formatDate} from "@angular/common";
 export class YearTemperatureComponent implements OnInit {
   @Input() public availableYears: number [] = [];
   data: YearSummary[] = [];
-  chartConfig: ExportChart = YEAR_SUMMARY_CHART_CONFIG;
+  chartConfig: ExportChart = {...YEAR_SUMMARY_CHART_CONFIG};
   // @ts-ignore
   @ViewChild(ChartjsComponent, {static: false}) chart: ChartjsComponent;
 

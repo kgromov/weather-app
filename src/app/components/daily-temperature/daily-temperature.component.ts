@@ -12,7 +12,7 @@ import {takeUntil} from "rxjs/operators";
 import { HttpStatusCode } from "@angular/common/http";
 
 @Component({
-  selector: 'app-daily-temperature',
+  selector: 'daily-temperature',
   templateUrl: './daily-temperature.component.html',
   styleUrls: ['../../app.component.css']
 })
@@ -20,7 +20,7 @@ export class DailyTemperatureComponent implements OnInit, OnDestroy {
   data: WeatherData[] = [];
   availableYears: number[] = [];
   selectedYears: number = 0;
-  chartConfig: ExportChart = DAILY_CHART_CONFIG;
+  chartConfig: ExportChart = {...DAILY_CHART_CONFIG};
   private $subject: Subject<void> = new Subject<void>();
 
   // @ts-ignore

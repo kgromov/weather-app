@@ -12,6 +12,11 @@ export const MONTH_NAMES = [
   "October", "November", "December"
 ];
 
+export interface MonthName {
+  name: string,
+  value: number
+}
+
 export enum AggregateType {
   MIN = 'MIN',
   AVG = 'AVG',

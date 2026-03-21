@@ -12,7 +12,11 @@
       </a>
       <a class="nav-link" routerLink="/month"
          [class.active]="monthView" (click)="selectMonthView()">
-        Months
+        Month
+      </a>
+      <a class="nav-link" routerLink="/yearsMonth"
+         [class.active]="yearsMonthView" (click)="selectYearsMonthView()">
+        Years Month
       </a>
       <a class="nav-link" routerLink="/season"
          [class.active]="seasonView" (click)="selectSeasonView()">
@@ -29,4 +33,4 @@
   <router-outlet></router-outlet>
 </div>
 
-<footer class="text-center mt-5 mb-2-">Copyright © {{currentYear}} by kgromov</footer>
+<footer class="text-center mt-5 mb-2-">Copyright © {{currentYear}} by Konstantin Gromov</footer>
