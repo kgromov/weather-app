@@ -54,8 +54,9 @@ export class MonthTemperatureComponent extends AbstractTemperatureDirective<Mont
   }
 
   private fetchChartData(): void {
-    const year = this.year.value || new Date().getUTCFullYear();
-    const month = this.month.value?.value || new Date().getUTCMonth();
+    const year = this.year.value;
+    const month = this.month.value.value;
+    console.log(`Selected year = ${JSON.stringify(year)} and month = ${JSON.stringify(month)}`);
     this.seasonService.getYearMonthTemperature(year, month)
       .subscribe(data => {
         this.data = data;
