@@ -4,35 +4,34 @@ import {Subject} from "rxjs";
 import {ChartDataset} from "chart.js";
 import {formatDate} from "@angular/common";
 import {SyncStatus, WeatherData} from "../../model/weather-data";
-import {DAILY_CHART_CONFIG, ExportChart} from "../../model/chart-config";
+import {DAILY_CHART_CONFIG} from "../../model/chart-config";
 import {BsDatepickerDirective} from "ngx-bootstrap/datepicker";
-import {ChartjsComponent} from "@ctrl/ngx-chartjs";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {takeUntil} from "rxjs/operators";
-import { HttpStatusCode } from "@angular/common/http";
+import {HttpStatusCode} from "@angular/common/http";
+import {AbstractTemperatureDirective} from "../abstract-temperature.directive";
 
 @Component({
   selector: 'daily-temperature',
   templateUrl: './daily-temperature.component.html',
   styleUrls: ['../../app.component.css']
 })
-export class DailyTemperatureComponent implements OnInit, OnDestroy {
-  data: WeatherData[] = [];
+export class DailyTemperatureComponent extends AbstractTemperatureDirective<WeatherData> implements OnInit, OnDestroy {
+  override data: WeatherData[] = [];
   availableYears: number[] = [];
   selectedYears: number = 0;
-  chartConfig: ExportChart = {...DAILY_CHART_CONFIG};
   private $subject: Subject<void> = new Subject<void>();
 
   // @ts-ignore
   @ViewChild(BsDatepickerDirective, {static: false}) datepicker: BsDatepickerDirective;
   // @ts-ignore
-  @ViewChild(ChartjsComponent, {static: false}) chart: ChartjsComponent;
-  // @ts-ignore
   form: FormGroup;
 
-  constructor(@Inject(LOCALE_ID) public locale: string,
-              private weatherService: WeatherServiceService,
+  constructor(@Inject(LOCALE_ID) protected override locale: string,
+              protected override weatherService: WeatherServiceService,
               private fb: FormBuilder) {
+    super(locale, weatherService);
+    this.chartConfig = {...DAILY_CHART_CONFIG};
   }
 
   ngOnInit(): void {
@@ -106,7 +105,7 @@ export class DailyTemperatureComponent implements OnInit, OnDestroy {
       });
   }
 
-  private updateChartData(weatherData: WeatherData[]): void {
+  protected updateChartData(weatherData: WeatherData[]): void {
     // // @ts-ignore
     // this.chartConfig.options.plugins?.tooltip?.external = function (context) {
     //   console.log(context.tooltip.title);

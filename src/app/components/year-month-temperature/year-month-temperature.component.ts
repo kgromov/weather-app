@@ -1,36 +1,34 @@
-import {Component, Inject, LOCALE_ID, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {MONTH_NAMES, YearMonthTemperature, YearByMonthTemperature, MonthName} from "../../model/season-data";
-import {ExportChart, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
-import {ChartjsComponent} from "@ctrl/ngx-chartjs";
+import {Component, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
+import {MONTH_NAMES, MonthName, YearByMonthTemperature, YearMonthTemperature} from "../../model/season-data";
+import {YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {WeatherServiceService} from "../../services/weather-service.service";
 import {TemperatureService} from "../../services/temperature.service";
 import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 import {ChartDataset} from "chart.js";
+import {AbstractTemperatureDirective} from "../abstract-temperature.directive";
 
 @Component({
   selector: 'year-month-temperature',
   templateUrl: './year-month-temperature.component.html',
   styleUrls: ['../../app.component.css']
 })
-export class YearMonthTemperatureComponent implements OnInit, OnDestroy {
+export class YearMonthTemperatureComponent extends AbstractTemperatureDirective<YearByMonthTemperature> implements OnInit, OnDestroy {
 
   availableYears: number [] = [];
   yearsRange: number = 0;
-  data: YearByMonthTemperature[] = [];
-  chartConfig: ExportChart = {...YEAR_SUMMARY_CHART_CONFIG};
-  // @ts-ignore
-  @ViewChild(ChartjsComponent, {static: false}) chart: ChartjsComponent;
   private $subject: Subject<void> = new Subject<void>();
   // @ts-ignore
   form: FormGroup;
   monthItems: MonthName[] = MONTH_NAMES.map((value, index) => ({name: value, value: index + 1}))
 
-  constructor(@Inject(LOCALE_ID) public locale: string,
-              private weatherService: WeatherServiceService,
+  constructor(@Inject(LOCALE_ID) protected override locale: string,
+              protected override  weatherService: WeatherServiceService,
               private seasonService: TemperatureService,
               private fb: FormBuilder) {
+    super(locale, weatherService);
+    this.chartConfig = {...YEAR_SUMMARY_CHART_CONFIG};
   }
 
   ngOnInit(): void {
@@ -70,7 +68,7 @@ export class YearMonthTemperatureComponent implements OnInit, OnDestroy {
     this.month.setValue(month);
   }
 
-  private updateChartData(data: YearByMonthTemperature[]) {
+  protected updateChartData(data: YearByMonthTemperature[]) {
     // @ts-ignore
     const currentMonthIndex: number = this.month.value?.value || 0;
     console.log('currentMonthIndex = ', currentMonthIndex);

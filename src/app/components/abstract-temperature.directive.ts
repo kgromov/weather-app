@@ -1,15 +1,23 @@
-import {Directive, Inject, LOCALE_ID} from '@angular/core';
+import {Directive, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {DEFAULT_CONFIG, ExportChart} from "../model/chart-config";
 import {WeatherServiceService} from "../services/weather-service.service";
+import {ChartjsComponent} from "@ctrl/ngx-chartjs";
 
 @Directive({
-  selector: '[appAbstractTemperature]'
+  selector: '[abstractTemperature]'
 })
-export class AbstractTemperatureDirective {
-  chartConfig: ExportChart = {...DEFAULT_CONFIG};
+export abstract class AbstractTemperatureDirective<T> {
+  protected chartConfig: ExportChart = {...DEFAULT_CONFIG};
+  protected data: T[] = [];
+  // @ts-ignore
+  @ViewChild(ChartjsComponent, {static: false}) protected chart: ChartjsComponent;
 
-  constructor(@Inject(LOCALE_ID) public locale: string,
-              private weatherService: WeatherServiceService) {
+  protected constructor(
+    @Inject(LOCALE_ID) protected locale: string,
+    protected weatherService: WeatherServiceService
+  ) {
   }
+
+  protected abstract updateChartData(data: T[]): void;
 
 }
