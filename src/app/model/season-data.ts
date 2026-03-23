@@ -12,6 +12,11 @@ export const MONTH_NAMES = [
   "October", "November", "December"
 ];
 
+export interface MonthName {
+  name: string,
+  value: number
+}
+
 export enum AggregateType {
   MIN = 'MIN',
   AVG = 'AVG',
@@ -40,7 +45,7 @@ export interface YearSummary {
   minTempDates?: string[]
 }
 
-export interface MonthTemperature {
+export interface YearMonthTemperature {
   year: number,
   month: number,
   minTemp: number
@@ -50,5 +55,12 @@ export interface MonthTemperature {
 
 export interface YearByMonthTemperature {
   year: number,
-  months: MonthTemperature[];
+  months: YearMonthTemperature[];
+}
+
+export interface MonthTemperature {
+  day: number,
+  minTemp: number
+  maxTemp: number
+  avgTemp: number
 }

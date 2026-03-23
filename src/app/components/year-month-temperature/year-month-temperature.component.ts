@@ -1,5 +1,5 @@
 import {Component, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
-import {MONTH_NAMES, MonthName, MonthTemperature} from "../../model/season-data";
+import {MONTH_NAMES, MonthName, YearByMonthTemperature, YearMonthTemperature} from "../../model/season-data";
 import {YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {WeatherServiceService} from "../../services/weather-service.service";
@@ -9,58 +9,51 @@ import {takeUntil} from "rxjs/operators";
 import {ChartDataset} from "chart.js";
 import {AbstractTemperatureDirective} from "../abstract-temperature.directive";
 
-
 @Component({
-  selector: 'month-temperature',
-  templateUrl: './month-temperature.component.html',
+  selector: 'year-month-temperature',
+  templateUrl: './year-month-temperature.component.html',
   styleUrls: ['../../app.component.css']
 })
-export class MonthTemperatureComponent extends AbstractTemperatureDirective<MonthTemperature> implements OnInit, OnDestroy {
+export class YearMonthTemperatureComponent extends AbstractTemperatureDirective<YearByMonthTemperature> implements OnInit, OnDestroy {
 
   availableYears: number [] = [];
+  yearsRange: number = 0;
   private $subject: Subject<void> = new Subject<void>();
   // @ts-ignore
   form: FormGroup;
-  monthItems: MonthName[] = MONTH_NAMES.map((value, index) => ({name: value, value: index}))
+  monthItems: MonthName[] = MONTH_NAMES.map((value, index) => ({name: value, value: index + 1}))
 
   constructor(@Inject(LOCALE_ID) protected override locale: string,
-              protected override weatherService: WeatherServiceService,
+              protected override  weatherService: WeatherServiceService,
               private seasonService: TemperatureService,
               private fb: FormBuilder) {
     super(locale, weatherService);
-    this.chartConfig = {...YEAR_SUMMARY_CHART_CONFIG, type: 'bar'};
+    this.chartConfig = {...YEAR_SUMMARY_CHART_CONFIG};
   }
 
   ngOnInit(): void {
-    const currentYear: number = new Date().getUTCFullYear();
-    const currentMonth: number = new Date().getUTCMonth();
+    const currentMonth: number = new Date().getMonth();
     this.form = this.fb.group({
-      year: currentYear,
       month: this.monthItems[currentMonth]
     });
-    this.form.valueChanges
-      .pipe(takeUntil(this.$subject))
-      .subscribe(value => {
-        console.log('Selected year and month = ', JSON.stringify(value));
-        this.fetchChartData();
-      });
-    this.fetchChartData();
 
     this.weatherService.getYearsToShow()
       .subscribe(yearsRange => {
         console.log('Years range = ', yearsRange);
-        this.availableYears = [...Array(yearsRange).keys()].map(i => currentYear - i)
+        this.availableYears = [...Array(yearsRange).keys()].map(i => i + 1)
       });
-  }
 
-  private fetchChartData(): void {
-    const year = this.year.value;
-    const month = this.month.value.value;
-    console.log(`Selected year = ${JSON.stringify(year)} and month = ${JSON.stringify(month)}`);
-    this.seasonService.getYearMonthTemperature(year, month)
+    this.seasonService.getYearMonthSummaryTemperature()
       .subscribe(data => {
         this.data = data;
         this.updateChartData(data);
+      });
+
+    this.month.valueChanges
+      .pipe(takeUntil(this.$subject))
+      .subscribe(value => {
+        console.log('Selected month = ', JSON.stringify(value));
+        this.updateChartData(this.data);
       });
   }
 
@@ -75,12 +68,7 @@ export class MonthTemperatureComponent extends AbstractTemperatureDirective<Mont
     this.month.setValue(month);
   }
 
-  onYearsChanged(year: number) {
-    console.log('Selected year = ', year);
-    this.year.setValue(year);
-  }
-
-  protected updateChartData(data: MonthTemperature[]) {
+  protected updateChartData(data: YearByMonthTemperature[]) {
     // @ts-ignore
     const currentMonthIndex: number = this.month.value?.value || 0;
     console.log('currentMonthIndex = ', currentMonthIndex);
@@ -89,13 +77,19 @@ export class MonthTemperatureComponent extends AbstractTemperatureDirective<Mont
     const averageData: any[] = [];
     const maxData: any[] = [];
     data
-      .forEach(day => {
-        console.log('day = ', day);
-        labelsData.push(day.day);
-        minData.push(day.minTemp);
-        averageData.push(day.avgTemp);
-        maxData.push(day.maxTemp);
+      .forEach(yearMonths => {
+        console.log('year months = ', yearMonths);
+        const months: YearMonthTemperature[] = yearMonths.months;
+        // @ts-ignore
+        const currentMonth: YearMonthTemperature = months.find(it => it.month === currentMonthIndex);
+        if (!!currentMonth) {
+          labelsData.push(yearMonths.year);
+          minData.push(currentMonth.minTemp);
+          averageData.push(currentMonth.avgTemp);
+          maxData.push(currentMonth.maxTemp);
+        }
       });
+    this.yearsRange = labelsData.length;
 
     this.chartConfig.data.labels = [...labelsData];
     const datasets: ChartDataset[] = this.chartConfig.data.datasets;
@@ -105,10 +99,6 @@ export class MonthTemperatureComponent extends AbstractTemperatureDirective<Mont
     console.log('Chart data: ', this.chartConfig);
     // to trigger refresh
     this.chart.updateChart();
-  }
-
-  get year(): FormControl {
-    return this.form.get('year') as FormControl;
   }
 
   get month(): FormControl {

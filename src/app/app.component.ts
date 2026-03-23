@@ -37,15 +37,17 @@ Chart.register(BarController, BarElement,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentYear: number = new Date().getFullYear();
+  currentYear: number = new Date().getUTCFullYear();
   dailyView: boolean = true;
   monthView: boolean = false;
+  yearsMonthView: boolean = false;
   seasonView: boolean = false;
   yearView: boolean = false;
 
   selectDailyView(): void {
     this.dailyView = true;
     this.monthView = false;
+    this.yearsMonthView = false;
     this.seasonView = false;
     this.yearView = false;
   }
@@ -53,6 +55,15 @@ export class AppComponent {
   selectMonthView(): void {
     this.dailyView = false;
     this.monthView = true;
+    this.yearsMonthView = false;
+    this.seasonView = false;
+    this.yearView = false;
+  }
+
+  selectYearsMonthView(): void {
+    this.dailyView = false;
+    this.monthView = false;
+    this.yearsMonthView = true;
     this.seasonView = false;
     this.yearView = false;
   }
@@ -60,6 +71,7 @@ export class AppComponent {
   selectSeasonView(): void {
     this.dailyView = false;
     this.monthView = false;
+    this.yearsMonthView = false;
     this.seasonView = true;
     this.yearView = false;
   }
@@ -67,6 +79,7 @@ export class AppComponent {
   selectYearView(): void {
     this.dailyView = false;
     this.monthView = false;
+    this.yearsMonthView = false;
     this.seasonView = false;
     this.yearView = true;
   }

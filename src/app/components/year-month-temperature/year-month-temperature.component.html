@@ -4,28 +4,16 @@
        data-bs-toggle="dropdown" href="#"
        role="button"
        aria-haspopup="true"
-       aria-expanded="false">{{ year.value }}</a>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" *ngFor="let year of availableYears" (click)="onYearsChanged(year)">{{ year }}</a>
-    </div>
-  </li>
-
-  <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle"
-       data-bs-toggle="dropdown" href="#"
-       role="button"
-       aria-haspopup="true"
        aria-expanded="false">{{ monthName }}</a>
     <div class="dropdown-menu">
-      <a class="dropdown-item" *ngFor="let month of monthItems"
-         (click)="onMonthChanged(month)">{{ this.month.name }}</a>
+      <a class="dropdown-item" *ngFor="let month of monthItems" (click)="onMonthChanged(month)">{{ this.month.name }}</a>
     </div>
   </li>
 </ul>
 
 <div class="container">
-  <h2 class="text-center dim">Weather in {{ monthName }}, {{ year.value }}</h2>
-  <div class="row" *ngIf="!!monthName && year.value">
+  <h2 class="text-center dim">Weather in {{ monthName }} for last {{ yearsRange }} years</h2>
+  <div class="row" *ngIf="!!monthName">
     <div class="col-12">
       <div class="card">
         <div class="card-body">

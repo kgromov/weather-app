@@ -192,7 +192,7 @@ export const YEAR_SUMMARY_CHART_CONFIG: ExportChart  = {
       {
         data: [/*2.00, -1.00, 0.00, -2.31, 1.56, -14.55, -6.73, -3.42, 2.17, -0.25, 3.73, 7.73*/],
         label: 'Min',
-        backgroundColor: 'rgba(255, 255, 0, 0.4)',
+        backgroundColor: 'blue',
         borderColor: 'cyan',
         pointBackgroundColor: 'blue',
         pointBorderColor: 'blue',
@@ -201,7 +201,7 @@ export const YEAR_SUMMARY_CHART_CONFIG: ExportChart  = {
       {
         data: [/*3.00, -1.00, 0.00, 4.25, 2.00, -6.55, -5.36, 1.55, 6.09, 1.00, 4.33, 10.55*/],
         label: 'Average',
-        backgroundColor: 'rgba(255, 255, 0, 0.4)',
+        backgroundColor: 'green',
         borderColor: 'lime',
         pointBackgroundColor: 'green',
         pointBorderColor: 'green',
@@ -210,7 +210,7 @@ export const YEAR_SUMMARY_CHART_CONFIG: ExportChart  = {
       {
         data: [/*20.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00*/],
         label: 'Max',
-        backgroundColor: 'rgba(255, 255, 0, 0.4)',
+        backgroundColor: 'red',
         borderColor: 'orange',
         pointBackgroundColor: 'orange',
         pointBorderColor: 'red',

@@ -1,34 +1,32 @@
-import {Component, Inject, LOCALE_ID, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
 import {AggregateType, Season, SeasonTemperature, YearBySeasonTemperature} from "../../model/season-data";
-import {ExportChart, SEASONS_CHART_CONFIG} from "../../model/chart-config";
-import {ChartjsComponent} from "@ctrl/ngx-chartjs";
+import {SEASONS_CHART_CONFIG} from "../../model/chart-config";
 import {TemperatureService} from "../../services/temperature.service";
 import {ChartDataset} from "chart.js";
 import {WeatherServiceService} from "../../services/weather-service.service";
 import {Subject} from "rxjs";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {takeUntil} from "rxjs/operators";
+import {AbstractTemperatureDirective} from "../abstract-temperature.directive";
 
 @Component({
-  selector: 'app-season-temperature',
+  selector: 'season-temperature',
   templateUrl: './season-temperature.component.html',
   styleUrls: ['../../app.component.css']
 })
-export class SeasonTemperatureComponent implements OnInit, OnDestroy {
+export class SeasonTemperatureComponent extends AbstractTemperatureDirective<YearBySeasonTemperature> implements OnInit, OnDestroy {
   availableYears: number [] = [];
-  data: YearBySeasonTemperature[] = [];
-  chartConfig: ExportChart = SEASONS_CHART_CONFIG;
-  // @ts-ignore
-  @ViewChild(ChartjsComponent, {static: false}) chart: ChartjsComponent;
   private $subject: Subject<void> = new Subject<void>();
   // @ts-ignore
   form: FormGroup;
   aggregateTypes: string[] = Object.keys(AggregateType);
 
-  constructor(@Inject(LOCALE_ID) public locale: string,
-              private weatherService: WeatherServiceService,
+  constructor(@Inject(LOCALE_ID) protected override locale: string,
+              protected override weatherService: WeatherServiceService,
               private seasonService: TemperatureService,
               private fb: FormBuilder) {
+    super(locale, weatherService);
+    this.chartConfig = {...SEASONS_CHART_CONFIG};
   }
 
   ngOnInit(): void {
@@ -68,7 +66,7 @@ export class SeasonTemperatureComponent implements OnInit, OnDestroy {
     this.aggregateType.setValue(aggregateType);
   }
 
-  private updateChartData(data: YearBySeasonTemperature[]): void {
+  protected updateChartData(data: YearBySeasonTemperature[]): void {
     const labelsData: any[] = [];
     const winterData: any[] = [];
     const springData: any[] = [];

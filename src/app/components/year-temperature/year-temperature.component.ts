@@ -1,7 +1,6 @@
-import {Component, Inject, Input, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {AggregateType, YearSummary} from "../../model/season-data";
 import {ExportChart, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
-import {ChartjsComponent} from "@ctrl/ngx-chartjs";
 import {TemperatureService} from "../../services/temperature.service";
 import {
   ActiveElement,
@@ -15,6 +14,7 @@ import {
 } from "chart.js";
 import {WeatherServiceService} from "../../services/weather-service.service";
 import {formatDate} from "@angular/common";
+import {AbstractTemperatureDirective} from "../abstract-temperature.directive";
 
 
 @Component({
@@ -22,16 +22,14 @@ import {formatDate} from "@angular/common";
   templateUrl: './year-temperature.component.html',
   styleUrls: ['../../app.component.css']
 })
-export class YearTemperatureComponent implements OnInit {
-  @Input() public availableYears: number [] = [];
-  data: YearSummary[] = [];
-  chartConfig: ExportChart = YEAR_SUMMARY_CHART_CONFIG;
-  // @ts-ignore
-  @ViewChild(ChartjsComponent, {static: false}) chart: ChartjsComponent;
+export class YearTemperatureComponent extends AbstractTemperatureDirective<YearSummary> implements OnInit {
+  availableYears: number [] = [];
 
-  constructor(@Inject(LOCALE_ID) public locale: string,
-              private weatherService: WeatherServiceService,
+  constructor(@Inject(LOCALE_ID) protected override locale: string,
+              protected override weatherService: WeatherServiceService,
               private seasonService: TemperatureService) {
+    super(locale, weatherService);
+    this.chartConfig = {...YEAR_SUMMARY_CHART_CONFIG};
   }
 
   ngOnInit(): void {
@@ -49,7 +47,7 @@ export class YearTemperatureComponent implements OnInit {
       });
   }
 
-  private updateChartData(data: YearSummary[]): void {
+  protected updateChartData(data: YearSummary[]): void {
     const labelsData: any[] = [];
     const minData: any[] = [];
     const averageData: any[] = [];
