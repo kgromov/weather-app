@@ -2,16 +2,7 @@ import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {AggregateType, YearSummary} from "../../model/season-data";
 import {ExportChart, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
 import {TemperatureService} from "../../services/temperature.service";
-import {
-  ActiveElement,
-  Chart, ChartData,
-  ChartDataset, ChartEvent,
-  PluginChartOptions,
-  PluginOptionsByType,
-  ScriptableContext,
-  TooltipCallbacks,
-  TooltipModel
-} from "chart.js";
+import {ActiveElement, Chart, ChartData, ChartDataset, ChartEvent, ScriptableContext} from "chart.js";
 import {WeatherServiceService} from "../../services/weather-service.service";
 import {formatDate} from "@angular/common";
 import {AbstractTemperatureDirective} from "../abstract-temperature.directive";

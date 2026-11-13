@@ -16,7 +16,7 @@ export class TemperatureService {
 
   public getYearSummary(years?: number): Observable<YearSummary[]> {
     const params = this.getYearsToShowParams(years);
-    return this.http.get<YearSummary[]>(`${this.baseUrl}/api/weather/summary`, {params: params});
+    return this.http.get<YearSummary[]>(`${this.baseUrl}/api/weather/years`, {params: params});
   }
 
   public getSeasonsTemperature(years?: number): Observable<YearBySeasonTemperature[]> {

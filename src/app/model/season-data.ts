@@ -28,7 +28,9 @@ export interface SeasonTemperature {
   season: Season,
   minTemp: number
   maxTemp: number
-  avgTemp: number
+  avgTemp: number,
+  maxTempDates?: string[],
+  minTempDates?: string[]
 }
 
 export interface YearBySeasonTemperature {
@@ -50,7 +52,9 @@ export interface YearMonthTemperature {
   month: number,
   minTemp: number
   maxTemp: number
-  avgTemp: number
+  avgTemp: number,
+  maxTempDates?: string[],
+  minTempDates?: string[]
 }
 
 export interface YearByMonthTemperature {
