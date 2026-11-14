@@ -37,6 +37,7 @@ export class YearMonthTemperatureComponent extends AbstractTemperatureDirective<
       month: this.monthItems[currentMonth]
     });
 
+    this.chartConfig = this.chartConfigOverrides(YEAR_SUMMARY_CHART_CONFIG, this.formatToDay);
     this.weatherService.getYearsToShow()
       .subscribe(yearsRange => {
         console.log('Years range = ', yearsRange);

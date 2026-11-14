@@ -1,6 +1,6 @@
 import {Component, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
 import {AggregateType, Season, SeasonTemperature, YearBySeasonTemperature} from "../../model/season-data";
-import {SEASONS_CHART_CONFIG} from "../../model/chart-config";
+import {SEASONS_CHART_CONFIG, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
 import {TemperatureService} from "../../services/temperature.service";
 import {ChartDataset} from "chart.js";
 import {WeatherServiceService} from "../../services/weather-service.service";
@@ -35,7 +35,7 @@ export class SeasonTemperatureComponent extends AbstractTemperatureDirective<Yea
     this.form = this.fb.group({
       aggregateType: AggregateType.AVG,
     });
-
+    this.chartConfig = this.chartConfigOverrides(SEASONS_CHART_CONFIG, this.formatToMonthDay);
     this.weatherService.getYearsToShow()
       .subscribe(years => {
         console.log('Years range = ', years);
