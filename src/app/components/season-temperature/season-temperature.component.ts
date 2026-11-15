@@ -80,8 +80,8 @@ export class SeasonTemperatureComponent extends AbstractTemperatureDirective<Yea
             if (this.data?.length > 0) {
               const aggregation: AggregateType = this.form.get('aggregateType')?.value;
               const season: SeasonTemperature = this.data[context.dataIndex].seasons[context.datasetIndex];
-              console.log(`yearIndex = ${context.dataIndex}, seasonIndex = ${context.datasetIndex}`);
-              console.log(`Aggregation = ${aggregation}, season = ${season}`);
+              console.debug(`yearIndex = ${context.dataIndex}, seasonIndex = ${context.datasetIndex}`);
+              console.debug(`Aggregation = ${aggregation}, season = ${JSON.stringify(season)}`);
               switch (aggregation) {
                 case AggregateType.MIN:
                   // @ts-ignore
