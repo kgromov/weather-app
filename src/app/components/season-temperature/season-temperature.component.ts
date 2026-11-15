@@ -1,8 +1,8 @@
 import {Component, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
 import {AggregateType, Season, SeasonTemperature, YearBySeasonTemperature} from "../../model/season-data";
-import {SEASONS_CHART_CONFIG, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
+import {ExportChart, SEASONS_CHART_CONFIG} from "../../model/chart-config";
 import {TemperatureService} from "../../services/temperature.service";
-import {ChartDataset} from "chart.js";
+import {ChartDataset, ScriptableContext} from "chart.js";
 import {WeatherServiceService} from "../../services/weather-service.service";
 import {Subject} from "rxjs";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
@@ -35,7 +35,7 @@ export class SeasonTemperatureComponent extends AbstractTemperatureDirective<Yea
     this.form = this.fb.group({
       aggregateType: AggregateType.AVG,
     });
-    this.chartConfig = this.chartConfigOverrides(SEASONS_CHART_CONFIG, this.formatToMonthDay);
+    this.chartConfig = this.chartConfigOverrides(SEASONS_CHART_CONFIG, dates => this.formatToMonthDay(dates));
     this.weatherService.getYearsToShow()
       .subscribe(years => {
         console.log('Years range = ', years);
@@ -64,6 +64,63 @@ export class SeasonTemperatureComponent extends AbstractTemperatureDirective<Yea
   onAggregateChanged(aggregateType: string) {
     console.log('Selected aggregateType = ', aggregateType);
     this.aggregateType.setValue(aggregateType);
+  }
+
+
+  protected override chartConfigOverrides(chartConfig: ExportChart, dateFormatFn: (dates: string[]) => string): ExportChart {
+    const plugins: any = {
+      tooltip: {
+        enabled: true,
+        position: 'nearest',
+        callbacks: {
+          label: (context: ScriptableContext<any>) => {
+            console.trace('callback', context);
+            let label = context.dataset.label || '';
+            console.trace('label = ', label);
+            if (this.data?.length > 0) {
+              const aggregation: AggregateType = this.form.get('aggregateType')?.value;
+              const season: SeasonTemperature = this.data[context.dataIndex].seasons[context.datasetIndex];
+              console.log(`yearIndex = ${context.dataIndex}, seasonIndex = ${context.datasetIndex}`);
+              console.log(`Aggregation = ${aggregation}, season = ${season}`);
+              switch (aggregation) {
+                case AggregateType.MIN:
+                  // @ts-ignore
+                  const minDate = dateFormatFn(season.minTempDates);
+                  label = `${label}: ${context.raw} (${minDate})`;
+                  break;
+                case AggregateType.MAX:
+                  // @ts-ignore
+                  const maxDate = dateFormatFn(season.maxTempDates);
+                  label = `${label}: ${context.raw} (${maxDate})`;
+                  break;
+                case AggregateType.AVG:
+                  label = `${label}: ${Math.round((context.raw as number) * 100) / 100}`;
+                  break;
+              }
+            }
+            console.trace('modified label = ', label);
+            return label;
+          }
+        }
+      },
+      legend: {
+        display: true,
+        position: 'top',
+        labels: {
+          font: {
+            size: 14
+          }
+        }
+      }
+    }
+    const optionsOverrides: any = {
+      ...chartConfig.options,
+      plugins: plugins,
+    };
+    return {
+      ...chartConfig,
+      options: optionsOverrides
+    };
   }
 
   protected updateChartData(data: YearBySeasonTemperature[]): void {

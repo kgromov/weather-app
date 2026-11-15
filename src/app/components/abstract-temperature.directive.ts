@@ -100,14 +100,14 @@ export abstract class AbstractTemperatureDirective<T> {
     const dataObject: any = dataset[datasetIndex].data[pointIndex];
   }
 
-  protected formatToMonthDay(extremumDates: string[] = []): string {
-    return extremumDates.map(date => formatDate(new Date(date), 'MMM, dd', this.locale))
+  protected formatToMonthDay = (extremumDates: string[] = []): string =>
+    extremumDates
+      .map(date => formatDate(new Date(date), 'MMM, dd', this.locale))
       .join('; ');
-  }
 
-  protected formatToDay(extremumDates: string[] = []): string {
-    return extremumDates.map(date => formatDate(new Date(date), 'dd', this.locale))
+  protected formatToDay = (extremumDates: string[] = []): string =>
+    extremumDates
+      .map(date => formatDate(new Date(date), 'dd', this.locale))
       .join('; ');
-  }
 
 }

@@ -24,7 +24,7 @@ export class YearTemperatureComponent extends AbstractTemperatureDirective<YearS
   }
 
   ngOnInit(): void {
-    this.chartConfig = this.chartConfigOverrides(YEAR_SUMMARY_CHART_CONFIG, this.formatToMonthDay);
+    this.chartConfig = this.chartConfigOverrides(YEAR_SUMMARY_CHART_CONFIG, dates => this.formatToMonthDay(dates));
     this.weatherService.getYearsToShow()
       .subscribe(years => {
         console.log('Years range = ', years);
