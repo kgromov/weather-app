@@ -1,12 +1,18 @@
 import {Component, Inject, LOCALE_ID, OnDestroy, OnInit} from '@angular/core';
-import {MONTH_NAMES, MonthName, YearByMonthTemperature, YearMonthTemperature} from "../../model/season-data";
-import {YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
+import {
+  AggregateType,
+  MONTH_NAMES,
+  MonthName,
+  YearByMonthTemperature,
+  YearMonthTemperature
+} from "../../model/season-data";
+import {ExportChart, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {WeatherServiceService} from "../../services/weather-service.service";
 import {TemperatureService} from "../../services/temperature.service";
 import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
-import {ChartDataset} from "chart.js";
+import {ChartDataset, ScriptableContext} from "chart.js";
 import {AbstractTemperatureDirective} from "../abstract-temperature.directive";
 
 @Component({
@@ -37,6 +43,7 @@ export class YearMonthTemperatureComponent extends AbstractTemperatureDirective<
       month: this.monthItems[currentMonth]
     });
 
+    this.chartConfig = this.chartConfigOverrides(YEAR_SUMMARY_CHART_CONFIG, dates => this.formatToDay(dates));
     this.weatherService.getYearsToShow()
       .subscribe(yearsRange => {
         console.log('Years range = ', yearsRange);
@@ -66,6 +73,63 @@ export class YearMonthTemperatureComponent extends AbstractTemperatureDirective<
   onMonthChanged(month: MonthName) {
     console.log('Selected month = ', month.name);
     this.month.setValue(month);
+  }
+
+  protected override chartConfigOverrides(chartConfig: ExportChart, dateFormatFn: (dates: string[]) => string): ExportChart {
+    const plugins: any = {
+      tooltip: {
+        enabled: true,
+        position: 'nearest',
+        callbacks: {
+          label: (context: ScriptableContext<any>) => {
+            console.trace('callback', context);
+            let label = context.dataset.label || '';
+            console.trace('label = ', label);
+            if (this.data?.length > 0) {
+              const aggregation: AggregateType = Object.values(AggregateType)[context.datasetIndex];
+              const selectedMonthIndex = this.form.get('month')?.value?.value - 1;
+              const month: YearMonthTemperature = this.data[context.dataIndex].months[selectedMonthIndex];
+              console.debug(`yearIndex = ${context.dataIndex}, aggregationIndex = ${context.datasetIndex}, selectedMonth = ${JSON.stringify(this.form.value)}`);
+              console.debug(`Aggregation = ${aggregation}, month = ${JSON.stringify(month)}`);
+              switch (aggregation) {
+                case AggregateType.MIN:
+                  // @ts-ignore
+                  const minDate = dateFormatFn(month.minTempDates);
+                  label = `${label}: ${context.raw} (${minDate})`;
+                  break;
+                case AggregateType.MAX:
+                  // @ts-ignore
+                  const maxDate = dateFormatFn(month.maxTempDates);
+                  label = `${label}: ${context.raw} (${maxDate})`;
+                  break;
+                case AggregateType.AVG:
+                  label = `${label}: ${Math.round((context.raw as number) * 100) / 100}`;
+                  break;
+              }
+            }
+            console.trace('modified label = ', label);
+            return label;
+          }
+        }
+      },
+      legend: {
+        display: true,
+        position: 'top',
+        labels: {
+          font: {
+            size: 14
+          }
+        }
+      }
+    }
+    const optionsOverrides: any = {
+      ...chartConfig.options,
+      plugins: plugins,
+    };
+    return {
+      ...chartConfig,
+      options: optionsOverrides
+    };
   }
 
   protected updateChartData(data: YearByMonthTemperature[]) {

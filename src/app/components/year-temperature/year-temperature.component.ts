@@ -2,16 +2,7 @@ import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {AggregateType, YearSummary} from "../../model/season-data";
 import {ExportChart, YEAR_SUMMARY_CHART_CONFIG} from "../../model/chart-config";
 import {TemperatureService} from "../../services/temperature.service";
-import {
-  ActiveElement,
-  Chart, ChartData,
-  ChartDataset, ChartEvent,
-  PluginChartOptions,
-  PluginOptionsByType,
-  ScriptableContext,
-  TooltipCallbacks,
-  TooltipModel
-} from "chart.js";
+import {ActiveElement, Chart, ChartData, ChartDataset, ChartEvent, ScriptableContext} from "chart.js";
 import {WeatherServiceService} from "../../services/weather-service.service";
 import {formatDate} from "@angular/common";
 import {AbstractTemperatureDirective} from "../abstract-temperature.directive";
@@ -33,7 +24,7 @@ export class YearTemperatureComponent extends AbstractTemperatureDirective<YearS
   }
 
   ngOnInit(): void {
-    this.chartConfig = this.chartConfigOverrides(YEAR_SUMMARY_CHART_CONFIG);
+    this.chartConfig = this.chartConfigOverrides(YEAR_SUMMARY_CHART_CONFIG, dates => this.formatToMonthDay(dates));
     this.weatherService.getYearsToShow()
       .subscribe(years => {
         console.log('Years range = ', years);
@@ -69,84 +60,6 @@ export class YearTemperatureComponent extends AbstractTemperatureDirective<YearS
     this.chart.updateChart();
   }
 
-  private formatToMonthDay(extremumDates: string[] = []): string {
-    return extremumDates.map(date => formatDate(new Date(date), 'MMM, dd', this.locale))
-      .join('; ');
-  }
-
-  private chartConfigOverrides(chartConfig: ExportChart): ExportChart {
-    const plugins: any = {
-      tooltip: {
-        enabled: true,
-        position: 'nearest',
-        // external: (context: TooltipModel<any> ) => {
-        //   // Tooltip Element
-        //   const  { chart: Chart; tooltip: TooltipModel<TType> } = this.context;
-        // },
-        callbacks: {
-          label: (context: ScriptableContext<any>) => {
-            console.trace('callback', context);
-            let label = context.dataset.label || '';
-            console.trace('label = ', label);
-            if (this.data?.length > 0) {
-              const aggregation: AggregateType = Object.values(AggregateType)[context.datasetIndex];
-              switch (aggregation) {
-                case AggregateType.MIN:
-                  const minDate = this.formatToMonthDay(this.data[context.dataIndex]['minTempDates']);
-                  label = `${label}: ${context.raw} (${minDate})`;
-                  break;
-                case AggregateType.MAX:
-                  const maxDate = this.formatToMonthDay(this.data[context.dataIndex]['maxTempDates']);
-                  label = `${label}: ${context.raw} (${maxDate})`;
-                  break;
-                case AggregateType.AVG:
-                  label = `${label}: ${Math.round((context.raw as number) * 100) / 100}`;
-                  break;
-              }
-            }
-            console.trace('modified label = ', label);
-            return label;
-          }
-        }
-      },
-      legend: {
-        display: true,
-        position: 'top',
-        labels: {
-          font: {
-            size: 14
-          }
-        }
-      },
-      onClick: (event: ChartEvent, elements: ActiveElement[], chart: Chart) => {
-        this.onPointClicked(event, elements, chart)
-      }
-    }
-    const optionsOverrides: any = {
-      ...chartConfig.options,
-      plugins: plugins,
-    };
-    return {
-      ...chartConfig,
-      options: optionsOverrides
-    };
-  }
-
-  private onPointClicked(event: ChartEvent, elements: ActiveElement[], chart: Chart): void {
-    const selectedElements: ActiveElement[] = elements as ActiveElement[];
-    if (selectedElements.length <= 0) {
-      return;
-    }
-    const selectedElement: ActiveElement = selectedElements[0];
-    console.log(selectedElement.element);
-    const datasetIndex: number = selectedElement.datasetIndex;
-    const pointIndex: number = selectedElement.index;
-
-    const data: ChartData = chart.config.data as ChartData;
-    const dataset: ChartDataset[] = data.datasets;
-
-    const dataObject: any = dataset[datasetIndex].data[pointIndex];
-  }
 
   // const getOrCreateTooltip = (chart) => {
   //   let tooltipEl = chart.canvas.parentNode.querySelector('div');
